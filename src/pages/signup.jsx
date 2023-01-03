@@ -10,8 +10,38 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Link from "next/link";
+import { useState } from "react";
+import axios from "axios";
 
-const signup = () => {
+const signup = (props) => {
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+
+  const handleSubmit = (event) => {
+    axios
+      .post(
+        "http://localhost:3001/signup",
+        {
+          user_name: userName,
+          email: email,
+          password: password,
+          password_confirmation: passwordConfirmation,
+        },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        if (response.data.status === "created") {
+          props.handleSuccessfulAuthentication(response.data);
+        }
+      })
+      .catch((error) => {
+        console.log("registration error", error);
+      });
+    event.preventDefault();
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -30,16 +60,18 @@ const signup = () => {
         <Typography component="h1" variant="h5">
           新規登録
         </Typography>
-        <Box component="form" noValidate sx={{ mt: 3 }}>
+        <Box component="form" noValidate sx={{ mt: 3 }} onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
-                id="name"
+                id="userName"
                 label="ユーザー名"
-                name="name"
-                autoComplete="name"
+                name="user[userName]"
+                autoComplete="userName"
+                value={userName}
+                onChange={(event) => setUserName(event.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -48,30 +80,38 @@ const signup = () => {
                 fullWidth
                 id="email"
                 label="メールアドレス"
-                name="email"
+                name="user[email]"
                 autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
-                name="password"
+                name="user[password]"
                 label="パスワード"
                 type="password"
                 id="password"
                 autoComplete="new-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
-                name="password-confirmation"
+                name="user[password-confirmation]"
                 label="パスワード確認"
                 type="password"
                 id="password-confirmation"
                 autoComplete="new-password"
+                value={passwordConfirmation}
+                onChange={(event) =>
+                  setPasswordConfirmation(event.target.value)
+                }
               />
             </Grid>
           </Grid>
