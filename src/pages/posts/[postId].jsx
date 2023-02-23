@@ -6,12 +6,11 @@ import {
   Rating,
   Typography,
 } from "@mui/material";
-import axios from "axios";
 import Link from "next/link";
 import React from "react";
 
 // post:getStaticPropsから取得したデータ
-export default (props) => {
+const Post = (props) => {
   const { post } = props.post;
 
   const handleToDate = (data) => {
@@ -61,6 +60,10 @@ export default (props) => {
     </Grid>
   );
 };
+
+Post.displayName = 'Post';
+
+export default Post;
 
 export const getStaticPaths = async () => {
   // Postデータを全て取得

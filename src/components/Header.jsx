@@ -12,19 +12,23 @@ const Header = (props) => {
 
   const handleLogout = async () => {
     const axiosInstance = axios.create({
-      baseURL: `http://shikaku-app:3001/api/v1/`,
+      baseURL: `https://shikaku-app.net/api/v1/`,
       headers: {
         "content-type": "application/json",
       },
     });
     await axiosInstance
-      .delete("auth/sign_out", {
-        headers: {
-          "access-token": Cookies.get("access-token"),
-          client: Cookies.get("client"),
-          uid: Cookies.get("uid"),
+      .delete(
+        "auth/sign_out",
+        {
+          headers: {
+            "access-token": Cookies.get("access-token"),
+            client: Cookies.get("client"),
+            uid: Cookies.get("uid"),
+          },
         },
-      })
+        { withCredentials: true }
+      )
       .then((response) => {
         if (response.data.success) {
           Cookies.remove("uid");

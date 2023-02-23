@@ -6,9 +6,9 @@ import {
   createTheme,
   CssBaseline,
   ThemeProvider,
-  jaJP,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import jaJP from "@mui/material/locale";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -20,11 +20,7 @@ export default function App({ Component, pageProps }) {
   const [loginStatus, setLoginStatus] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
 
-  useEffect(() => {
-    checkLoginStatus();
-  }, []);
-
-  const checkLoginStatus = async () => {
+  const checkLoginStatus = useCallback(async () => {
     if (
       !Cookies.get("access-token") ||
       !Cookies.get("client") ||
@@ -53,7 +49,6 @@ export default function App({ Component, pageProps }) {
         { withCredentials: true }
       )
       .then((response) => {
-        console.log(response);
         if (response.data.loginStatus && !loginStatus) {
           setLoginStatus(true);
           setCurrentUser(response.data.user);
@@ -65,7 +60,11 @@ export default function App({ Component, pageProps }) {
       .catch((error) => {
         console.log("エラー", error);
       });
-  };
+  }, [loginStatus]);
+
+  useEffect(() => {
+    checkLoginStatus();
+  }, [checkLoginStatus]);
 
   const handleSuccessfulAuthentication = (data) => {
     handleLogin(data);
