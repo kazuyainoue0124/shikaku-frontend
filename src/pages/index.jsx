@@ -5,12 +5,12 @@ import PostList from "src/components/PostList";
 import Sidebar from "src/components/Sidebar";
 
 export default function Home(props) {
-  const { currentUser, posts } = props;
+  const { currentUser, posts, loginStatus, handleSuccessfulAuthentication } = props;
 
   return (
     <Grid container spacing={3}>
       <PostList posts={posts} />
-      <Sidebar currentUser={currentUser} />
+      <Sidebar currentUser={currentUser} loginStatus={loginStatus} handleSuccessfulAuthentication={handleSuccessfulAuthentication} />
     </Grid>
   );
 }
