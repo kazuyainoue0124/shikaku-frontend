@@ -91,6 +91,7 @@ export default function App({ Component, pageProps }) {
             {...pageProps}
             handleSuccessfulAuthentication={handleSuccessfulAuthentication}
             currentUser={currentUser}
+            loginStatus={loginStatus}
           />
           <Footer
             title="シカクチコミ! - IT資格の口コミアプリ -"
