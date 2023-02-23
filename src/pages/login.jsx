@@ -1,4 +1,5 @@
 import {
+  Alert,
   Avatar,
   Box,
   Button,
@@ -12,30 +13,42 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Link from "next/link";
 import { useState } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const login = (props) => {
+  const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (event) => {
-    axios
-      .post(
-        "http://localhost:3001/login",
-        {
+    event.preventDefault();
+    const axiosInstance = axios.create({
+      baseURL: `https://shikaku-app.net/api/v1/`,
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+    (async () => {
+      setIsError(false);
+      setErrorMessage("");
+      return await axiosInstance
+        .post("auth/sign_in", {
           email: email,
           password: password,
-        },
-        { withCredentials: true }
-      )
-      .then((response) => {
-        if (response.data.logged_in) {
+        })
+        .then(function (response) {
+          // Cookiesにトークンをセット
+          Cookies.set("uid", response.headers["uid"]);
+          Cookies.set("client", response.headers["client"]);
+          Cookies.set("access-token", response.headers["access-token"]);
           props.handleSuccessfulAuthentication(response.data);
-        }
-      })
-      .catch((error) => {
-        console.log("registration error", error);
-      });
-    event.preventDefault();
+        })
+        .catch(function (error) {
+          console.log(error);
+          setIsError(true);
+        });
+    })();
   };
 
   return (
@@ -92,6 +105,17 @@ const login = (props) => {
           >
             ログイン
           </Button>
+          {isError ? (
+            <Alert
+              onClose={() => {
+                setIsError(false);
+                setErrorMessage("");
+              }}
+              severity="error"
+            >
+              {errorMessage}
+            </Alert>
+          ) : null}
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/signup" variant="body2">
