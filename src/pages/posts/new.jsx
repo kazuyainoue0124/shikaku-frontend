@@ -12,6 +12,7 @@ import {
 import axios from "axios";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
+import { useState } from "react";
 
 const CreatePost = (props) => {
   const [isError, setIsError] = useState(false);
@@ -39,6 +40,29 @@ const CreatePost = (props) => {
     value: 13,
     label: "それ以上"
   });
+
+  const valuableScores = [
+    {
+      value: 5,
+      label: "すごく役に立った",
+    },
+    {
+      value: 4,
+      label: "どちらかというと役に立った",
+    },
+    {
+      value: 3,
+      label: "どちらとも言えない",
+    },
+    {
+      value: 2,
+      label: "どちらかというと役に立っていない",
+    },
+    {
+      value: 1,
+      label: "役に立っていない",
+    },
+  ]
 
   const handleSubmit = (event) => {
     event.preventDefault();

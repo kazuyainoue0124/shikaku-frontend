@@ -6,8 +6,8 @@ import {
   createTheme,
   CssBaseline,
   ThemeProvider,
-  jaJP,
 } from "@mui/material";
+import jaJP from "@mui/material/locale/jaJP";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
