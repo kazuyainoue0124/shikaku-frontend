@@ -9,52 +9,72 @@ import {
   jaJP,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const theme = createTheme({}, jaJP);
 
 export default function App({ Component, pageProps }) {
-  const [loggedInStatus, setLoggedInStatus] = useState("未ログイン");
-  const [user, setUser] = useState({});
-
-  const handleSuccessfulAuthentication = (data) => {
-    handleLogin(data);
-    Router.push("/");
-  };
-
-  const handleLogin = (data) => {
-    setLoggedInStatus("ログインなう");
-    setUser(data.user);
-  };
+  const router = useRouter();
+  const [loginStatus, setLoginStatus] = useState(false);
+  const [currentUser, setCurrentUser] = useState({});
 
   useEffect(() => {
     checkLoginStatus();
-  });
+  }, []);
 
-  const handleLogout = () => {
-    setLoggedInStatus("未ログイン");
-    setUser({});
-  };
-
-  const checkLoginStatus = () => {
-    axios
-      .get("http://localhost:3001/logged_in", { withCredentials: true })
+  const checkLoginStatus = async () => {
+    if (
+      !Cookies.get("access-token") ||
+      !Cookies.get("client") ||
+      !Cookies.get("uid")
+    ) {
+      setLoginStatus(false);
+      setCurrentUser({});
+      return;
+    }
+    const axiosInstance = axios.create({
+      baseURL: `https://shikaku-app.net/api/v1/`,
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+    return await axiosInstance
+      .get(
+        "auth/sessions",
+        {
+          headers: {
+            "access-token": Cookies.get("access-token"),
+            client: Cookies.get("client"),
+            uid: Cookies.get("uid"),
+          },
+        },
+        { withCredentials: true }
+      )
       .then((response) => {
-        if (response.data.logged_in && loggedInStatus === "未ログイン") {
-          setLoggedInStatus("ログインなう");
-          setUser(response.data.user);
-        } else if (
-          !response.data.logged_in &&
-          loggedInStatus === "ログインなう"
-        ) {
-          setLoggedInStatus("未ログイン");
-          setUser({});
+        console.log(response);
+        if (response.data.loginStatus && !loginStatus) {
+          setLoginStatus(true);
+          setCurrentUser(response.data.user);
+        } else if (!response.data.loginStatus && loginStatus) {
+          setLoginStatus(false);
+          setCurrentUser({});
         }
       })
       .catch((error) => {
-        console.log("ログインエラー", error);
+        console.log("エラー", error);
       });
+  };
+
+  const handleSuccessfulAuthentication = (data) => {
+    handleLogin(data);
+    router.push("/");
+  };
+
+  const handleLogin = (data) => {
+    setLoginStatus(true);
+    setCurrentUser(data.data);
   };
 
   return (
@@ -64,14 +84,14 @@ export default function App({ Component, pageProps }) {
         <Container maxWidth="lg">
           <Header
             title="シカクチコミ - IT資格の口コミアプリ -"
-            loggedInStatus={loggedInStatus}
-            handleLogout={handleLogout}
+            loginStatus={loginStatus}
+            setLoginStatus={setLoginStatus}
+            setCurrentUser={setCurrentUser}
           />
           <Component
             {...pageProps}
-            loggedInStatus={loggedInStatus}
             handleSuccessfulAuthentication={handleSuccessfulAuthentication}
-            handleLogout={handleLogout}
+            currentUser={currentUser}
           />
           <Footer
             title="シカクチコミ! - IT資格の口コミアプリ -"
