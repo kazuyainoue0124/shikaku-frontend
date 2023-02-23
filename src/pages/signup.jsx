@@ -26,7 +26,7 @@ const Signup = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const axiosInstance = axios.create({
-      baseURL: `http://localhost:3001/api/v1/`,
+      baseURL: `https://shikaku-app.net/api/v1/`,
       headers: {
         "content-type": "application/json",
       },
