@@ -1,4 +1,5 @@
 import {
+  Alert,
   Avatar,
   Box,
   Button,
@@ -12,34 +13,46 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Link from "next/link";
 import { useState } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const signup = (props) => {
+  const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
   const handleSubmit = (event) => {
-    axios
-      .post(
-        "http://localhost:3001/signup",
-        {
+    event.preventDefault();
+    const axiosInstance = axios.create({
+      baseURL: `http://localhost:3001/api/v1/`,
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+    (async () => {
+      setIsError(false);
+      setErrorMessage("");
+      return await axiosInstance
+        .post("auth", {
           user_name: userName,
           email: email,
           password: password,
           password_confirmation: passwordConfirmation,
-        },
-        { withCredentials: true }
-      )
-      .then((response) => {
-        if (response.data.status === "created") {
+        })
+        .then(function (response) {
+          // Cookiesにトークンをセット
+          Cookies.set("uid", response.headers["uid"]);
+          Cookies.set("client", response.headers["client"]);
+          Cookies.set("access-token", response.headers["access-token"]);
           props.handleSuccessfulAuthentication(response.data);
-        }
-      })
-      .catch((error) => {
-        console.log("registration error", error);
-      });
-    event.preventDefault();
+        })
+        .catch(function (error) {
+          console.log(error);
+          setIsError(true);
+        });
+    })();
   };
 
   return (
@@ -123,6 +136,17 @@ const signup = (props) => {
           >
             新規登録
           </Button>
+          {isError ? (
+            <Alert
+              onClose={() => {
+                setIsError(false);
+                setErrorMessage("");
+              }}
+              severity="error"
+            >
+              {errorMessage}
+            </Alert>
+          ) : null}
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/login" variant="body2">
