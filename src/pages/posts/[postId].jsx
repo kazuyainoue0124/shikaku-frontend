@@ -80,7 +80,7 @@ export const getStaticPaths = async () => {
 
   // path:事前ビルドするパスの対象を指定するパラメータ
   // fallback:事前ビルドしたパス以外にアクセスした時のパラメータ true:カスタム404pageを表示 false:404pageを表示
-  return { paths, fallback: true };
+  return { paths, fallback: false };
 };
 
 // paramsには上記pathsで指定した値が1postずつ入る
