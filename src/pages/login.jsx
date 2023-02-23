@@ -15,13 +15,13 @@ import { useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const login = (props) => {
+const Login = (props) => {
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const axiosInstance = axios.create({
       baseURL: `https://shikaku-app.net/api/v1/`,
@@ -29,26 +29,22 @@ const login = (props) => {
         "content-type": "application/json",
       },
     });
-    (async () => {
-      setIsError(false);
-      setErrorMessage("");
-      return await axiosInstance
-        .post("auth/sign_in", {
-          email: email,
-          password: password,
-        })
-        .then(function (response) {
-          // Cookiesにトークンをセット
-          Cookies.set("uid", response.headers["uid"]);
-          Cookies.set("client", response.headers["client"]);
-          Cookies.set("access-token", response.headers["access-token"]);
-          props.handleSuccessfulAuthentication(response.data);
-        })
-        .catch(function (error) {
-          console.log(error);
-          setIsError(true);
-        });
-    })();
+    setIsError(false);
+    setErrorMessage("");
+    try {
+      const response = await axiosInstance.post("auth/sign_in", {
+        email: email,
+        password: password,
+      });
+      Cookies.set("uid", response.headers["uid"]);
+      Cookies.set("client", response.headers["client"]);
+      Cookies.set("access-token", response.headers["access-token"]);
+      props.handleSuccessfulAuthentication(response.data);
+    } catch (error) {
+      console.log(error);
+      setIsError(true);
+      setErrorMessage("メールアドレスかパスワードが間違っています。");
+    }
   };
 
   return (
@@ -129,4 +125,4 @@ const login = (props) => {
   );
 };
 
-export default login;
+export default Login;

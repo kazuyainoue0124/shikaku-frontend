@@ -13,7 +13,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 
-const createpost = (props) => {
+const CreatePost = (props) => {
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
@@ -227,7 +227,7 @@ const createpost = (props) => {
   );
 };
 
-export default createpost;
+export default CreatePost;
 
 export const getStaticProps = async () => {
   const res = await fetch("https://shikaku-app.net/api/v1/certificates");

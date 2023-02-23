@@ -15,7 +15,7 @@ import { useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const signup = (props) => {
+const Signup = (props) => {
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [userName, setUserName] = useState("");
@@ -160,4 +160,4 @@ const signup = (props) => {
   );
 };
 
-export default signup;
+export default Signup;
