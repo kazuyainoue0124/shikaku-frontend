@@ -65,27 +65,9 @@ Post.displayName = "Post";
 
 export default Post;
 
-export const getStaticPaths = async () => {
-  // Postデータを全て取得
-  const res = await fetch("https://shikaku-app.net/posts");
-  // console.log(res);
-  const data = await res.json();
-
-  // 事前ビルドしたいパスを指定
-  const paths = data.posts.map((post) => ({
-    params: {
-      postId: post.id.toString(),
-    },
-  }));
-
-  // path:事前ビルドするパスの対象を指定するパラメータ
-  // fallback:事前ビルドしたパス以外にアクセスした時のパラメータ true:カスタム404pageを表示 false:404pageを表示
-  return { paths, fallback: false };
-};
-
-// paramsには上記pathsで指定した値が1postずつ入る
-export const getStaticProps = async ({ params }) => {
-  const res = await fetch(`https://shikaku-app.net/posts/${params.postId}`);
+export const getServerSideProps = async (context) => {
+  const id = context.query.postId;
+  const res = await fetch(`https://shikaku-app.net/posts/${id}`);
   const post = await res.json();
 
   // ページコンポーネントにpropsとして渡す
