@@ -15,7 +15,7 @@ export default function Home(props) {
   );
 }
 
-export const getStaticProps = async () => {
+export const getServerSideProps = async () => {
   const res = await fetch("https://shikaku-app.net/api/v1/posts");
   const posts = await res.json();
 
