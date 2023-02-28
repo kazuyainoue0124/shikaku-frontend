@@ -67,7 +67,7 @@ export default Post;
 
 export const getServerSideProps = async (context) => {
   const id = context.query.postId;
-  const res = await fetch(`https://shikaku-app.net/posts/${id}`);
+  const res = await fetch(`https://shikaku-app.net/api/v1/posts/${id}`);
   const post = await res.json();
 
   // ページコンポーネントにpropsとして渡す
